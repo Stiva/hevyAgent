@@ -245,7 +245,7 @@ export const createRoutineTool = {
       folder_id: folder_id ?? null,
       exercises: exercises.map((ex) => ({
         exercise_template_id: ex.exercise_template_id,
-        notes: ex.notes ?? null,
+        notes: ex.notes,
         superset_id: null,
         rest_seconds: ex.rest_seconds ?? 90,
         sets: ex.sets.map((set) => ({
