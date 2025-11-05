@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk"
+import Anthropic, { APIError } from "@anthropic-ai/sdk"
 import { hevyTools } from "@/lib/ai/tools"
 
 // Validate environment variables
@@ -156,7 +156,6 @@ export async function POST(req: Request) {
               system: systemPrompt,
               messages: anthropicMessages,
               tools,
-              stream: false,
             })
 
             console.log("✅ Claude response received")
@@ -164,7 +163,7 @@ export async function POST(req: Request) {
 
             // Check if Claude wants to use tools
             const toolUseBlocks = response.content.filter(
-              (block) => block.type === "tool_use"
+              (block: any) => block.type === "tool_use"
             )
 
             if (toolUseBlocks.length > 0) {
@@ -231,7 +230,7 @@ export async function POST(req: Request) {
               // No tool use, stream the text response
               console.log("📝 Claude provided text response (no tools)")
               const textBlocks = response.content.filter(
-                (block) => block.type === "text"
+                (block: any) => block.type === "text"
               )
 
               for (const block of textBlocks) {
@@ -260,11 +259,11 @@ export async function POST(req: Request) {
             console.error("Stack trace:", error.stack)
           }
 
-          if (error instanceof Anthropic.APIError) {
+          if (error instanceof APIError) {
+            const apiError = error as APIError
             console.error("Anthropic API Error Details:")
-            console.error("  Status:", error.status)
-            console.error("  Type:", error.type)
-            console.error("  Message:", error.message)
+            console.error("  Status:", apiError.status)
+            console.error("  Message:", apiError.message)
           }
 
           console.error("=========================\n")
@@ -288,11 +287,11 @@ export async function POST(req: Request) {
       console.error("Stack trace:", error.stack)
     }
 
-    if (error instanceof Anthropic.APIError) {
+    if (error instanceof APIError) {
+      const apiError = error as APIError
       console.error("Anthropic API Error Details:")
-      console.error("  Status:", error.status)
-      console.error("  Type:", error.type)
-      console.error("  Message:", error.message)
+      console.error("  Status:", apiError.status)
+      console.error("  Message:", apiError.message)
     }
 
     console.error("========================\n")

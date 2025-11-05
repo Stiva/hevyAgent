@@ -11,9 +11,7 @@ import ReactMarkdown from "react-markdown"
 
 export const ChatInterface = () => {
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-    })
+    useChat()
 
   const scrollRef = useRef<HTMLDivElement>(null)
 
