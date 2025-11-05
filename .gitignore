@@ -26,6 +26,9 @@ yarn-error.log*
 .env*.local
 .env
 
+# MCP configuration with potential API keys
+.cursor/
+
 # vercel
 .vercel
 

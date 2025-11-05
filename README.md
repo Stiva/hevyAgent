@@ -32,7 +32,7 @@ Before you begin, ensure you have:
 
 1. **Clone the repository**:
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Stiva/hevyAgent.git
    cd hevyAgent
    ```
 
@@ -54,12 +54,15 @@ Before you begin, ensure you have:
 
    Replace the placeholder values with your actual API keys.
 
-4. **Run the development server**:
+4. **(Optional) Set up MCP Servers**:
+   For enhanced AI capabilities with up-to-date documentation, see [MCP_SETUP.md](MCP_SETUP.md) for configuring Context7 and other MCP servers.
+
+5. **Run the development server**:
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**:
+6. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Usage
