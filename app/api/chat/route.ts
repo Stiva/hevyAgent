@@ -1,17 +1,13 @@
 import Anthropic, { APIError } from "@anthropic-ai/sdk"
-import { hevyTools } from "@/lib/ai/tools"
+import { createHevyTools } from "@/lib/ai/tools"
+import { auth } from "@/app/api/auth/[...nextauth]/route"
+import { getAuthenticatedHevyClient } from "@/lib/hevy-helpers"
 
 // Validate environment variables
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-const HEVY_API_KEY = process.env.HEVY_API_KEY
 
 if (!ANTHROPIC_API_KEY) {
   console.error("❌ ANTHROPIC_API_KEY is not set in environment variables")
-  console.error("Please add it to your .env.local file")
-}
-
-if (!HEVY_API_KEY) {
-  console.error("❌ HEVY_API_KEY is not set in environment variables")
   console.error("Please add it to your .env.local file")
 }
 
@@ -109,14 +105,35 @@ export async function POST(req: Request) {
       )
     }
 
-    if (!HEVY_API_KEY) {
-      console.error("❌ Missing HEVY_API_KEY")
+    // Get authenticated user and their Hevy API key
+    const session = await auth()
+    if (!session?.user?.id) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Please log in to use the chat feature.",
+        }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      )
+    }
+
+    // Get user's Hevy client
+    let hevyClient
+    try {
+      hevyClient = await getAuthenticatedHevyClient()
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
       return new Response(
         JSON.stringify({
           error: "Configuration Error",
-          message: "Hevy API key is not configured. Please add HEVY_API_KEY to your .env.local file.",
+          message: errorMessage.includes("API key") 
+            ? "Hevy API key not configured. Please add your API key in settings."
+            : errorMessage,
         }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { 
+          status: errorMessage.includes("Unauthorized") ? 401 : 403, 
+          headers: { "Content-Type": "application/json" } 
+        }
       )
     }
 
@@ -124,6 +141,9 @@ export async function POST(req: Request) {
     console.log("📨 Received messages:", messages.length)
     console.log("💬 Last message:", messages[messages.length - 1]?.content?.substring(0, 100))
 
+    // Create tools with user's Hevy client
+    const hevyTools = createHevyTools(hevyClient)
+    
     // Convert our tool definitions to Anthropic format
     const tools = Object.entries(hevyTools).map(([name, tool]) => ({
       name,

@@ -23,13 +23,12 @@ export class HevyClient {
   private apiKey: string
   private baseUrl: string
 
-  constructor(apiKey?: string, baseUrl?: string) {
-    this.apiKey = apiKey || process.env.HEVY_API_KEY || ""
-    this.baseUrl = baseUrl || process.env.HEVY_API_BASE_URL || "https://api.hevyapp.com"
-
-    if (!this.apiKey) {
+  constructor(apiKey: string, baseUrl?: string) {
+    if (!apiKey) {
       throw new Error("Hevy API key is required")
     }
+    this.apiKey = apiKey
+    this.baseUrl = baseUrl || process.env.HEVY_API_BASE_URL || "https://api.hevyapp.com"
   }
 
   private async request<T>(
@@ -178,6 +177,3 @@ export class HevyClient {
     return this.request<HevyExerciseHistory>(url)
   }
 }
-
-// Export singleton instance
-export const hevyClient = new HevyClient()

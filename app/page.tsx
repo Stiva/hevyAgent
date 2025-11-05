@@ -1,8 +1,13 @@
+"use client"
+
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Dumbbell, MessageSquare, TrendingUp, Calendar } from "lucide-react"
 
 export default function HomePage() {
+  const { data: session } = useSession()
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-5xl w-full space-y-8">
@@ -45,12 +50,20 @@ export default function HomePage() {
         </div>
 
         <div className="flex justify-center gap-4 mt-12">
-          <Link href="/dashboard">
-            <Button size="lg" className="gap-2">
-              <Dumbbell className="w-5 h-5" />
-              Go to Dashboard
-            </Button>
-          </Link>
+          {session ? (
+            <Link href="/dashboard">
+              <Button size="lg" className="gap-2">
+                <Dumbbell className="w-5 h-5" />
+                Go to Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button size="lg" className="gap-2">
+                Get Started
+              </Button>
+            </Link>
+          )}
         </div>
 
         <div className="text-center text-sm text-muted-foreground mt-8">

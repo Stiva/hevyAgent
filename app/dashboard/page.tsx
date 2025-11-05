@@ -2,6 +2,7 @@
 
 import { ChatInterface } from "@/components/chat-interface"
 import { WorkoutStats } from "@/components/workout-stats"
+import { UserMenu } from "@/components/auth/user-menu"
 import { Dumbbell } from "lucide-react"
 import Link from "next/link"
 
@@ -16,6 +17,7 @@ export default function DashboardPage() {
               <Dumbbell className="w-6 h-6 text-primary" />
               <h1 className="text-xl font-bold">Hevy Training Assistant</h1>
             </Link>
+            <UserMenu />
           </div>
         </div>
       </header>
