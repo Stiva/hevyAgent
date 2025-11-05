@@ -1,0 +1,87 @@
+{
+routine	{
+title	string
+example: April Leg Day 🔥
+The title of the routine.
+
+folder_id	number
+nullable: true
+example: null
+The folder id the routine should be added to. Pass null to insert the routine into default "My Routines" folder
+
+notes	string
+example: Focus on form over weight. Remember to stretch.
+Additional notes for the routine.
+
+exercises	[PostRoutinesRequestExercise{
+exercise_template_id	string
+example: D04AC939
+The ID of the exercise template.
+
+superset_id	integer
+nullable: true
+example: null
+The ID of the superset.
+
+rest_seconds	integer
+nullable: true
+example: 90
+The rest time in seconds.
+
+notes	string
+nullable: true
+example: Stay slow and controlled.
+Additional notes for the exercise.
+
+sets	[PostRoutinesRequestSet{
+type	string
+example: normal
+The type of the set.
+
+Enum:
+[ warmup, normal, failure, dropset ]
+weight_kg	number
+nullable: true
+example: 100
+The weight in kilograms.
+
+reps	integer
+nullable: true
+example: 10
+The number of repetitions.
+
+distance_meters	integer
+nullable: true
+example: null
+The distance in meters.
+
+duration_seconds	integer
+nullable: true
+example: null
+The duration in seconds.
+
+custom_metric	number
+nullable: true
+example: null
+A custom metric for the set. Currently used for steps and floors.
+
+rep_range	{
+description:	
+Range of reps for the set, if applicable
+
+start	number
+nullable: true
+example: 8
+Starting rep count for the range
+
+end	number
+nullable: true
+example: 12
+Ending rep count for the range
+
+}
+nullable: true
+}]
+}]
+}
+}
