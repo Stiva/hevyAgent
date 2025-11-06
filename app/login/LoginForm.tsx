@@ -19,7 +19,7 @@ export default function LoginForm() {
     setIsLoading(true)
     setError(null)
     try {
-      await signIn("google", { callbackUrl })
+      await signIn("google", { callbackUrl, redirect: true })
     } catch (err) {
       setError("Failed to sign in with Google")
       setIsLoading(false)

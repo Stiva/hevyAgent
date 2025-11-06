@@ -38,5 +38,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to dashboard after sign-in
+      if (url === baseUrl || url === `${baseUrl}/login`) {
+        return `${baseUrl}/dashboard`
+      }
+      // Handle relative URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Handle same origin URLs
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    },
   },
 })

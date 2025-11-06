@@ -3,12 +3,14 @@
 import { ChatInterface } from "@/components/chat-interface"
 import { WorkoutStats } from "@/components/workout-stats"
 import { UserMenu } from "@/components/auth/user-menu"
+import { ProtectedRoute } from "@/components/auth/protected-route"
 import { Dumbbell } from "lucide-react"
 import Link from "next/link"
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
       <header className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -37,5 +39,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   )
 }
