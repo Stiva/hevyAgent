@@ -3,6 +3,9 @@ import { createHevyTools } from "@/lib/ai/tools"
 import { auth } from "@/lib/auth"
 import { getAuthenticatedHevyClient } from "@/lib/hevy-helpers"
 
+// Force dynamic rendering for this route (uses auth which reads headers)
+export const dynamic = 'force-dynamic'
+
 // Validate environment variables
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 

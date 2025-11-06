@@ -2,6 +2,9 @@ import { auth } from "@/lib/auth"
 import { getUserApiKey, saveUserApiKey } from "@/lib/db/user-api-keys"
 import { NextResponse } from "next/server"
 
+// Force dynamic rendering for this route (uses auth which reads headers)
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const session = await auth()
