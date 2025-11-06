@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useAuth, useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,8 @@ import { Save, Eye, EyeOff, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 export default function SettingsPage() {
-  const { data: session, status } = useSession()
+  const { isLoaded, isSignedIn } = useAuth()
+  const { user } = useUser()
   const router = useRouter()
   const [apiKey, setApiKey] = useState("")
   const [showApiKey, setShowApiKey] = useState(false)
@@ -20,16 +21,16 @@ export default function SettingsPage() {
   const [configured, setConfigured] = useState(false)
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login")
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in")
     }
-  }, [status, router])
+  }, [isLoaded, isSignedIn, router])
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       fetchApiKey()
     }
-  }, [session])
+  }, [user])
 
   const fetchApiKey = async () => {
     setIsLoading(true)
@@ -84,7 +85,7 @@ export default function SettingsPage() {
     }
   }
 
-  if (status === "loading" || isLoading) {
+  if (!isLoaded || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin" />
@@ -92,7 +93,7 @@ export default function SettingsPage() {
     )
   }
 
-  if (!session) {
+  if (!isSignedIn) {
     return null
   }
 

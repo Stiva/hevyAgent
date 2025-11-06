@@ -1,5 +1,5 @@
 // Helper functions for Hevy API operations with authentication
-import { auth } from "@/lib/auth"
+import { auth } from "@clerk/nextjs/server"
 import { getUserApiKey } from "@/lib/db/user-api-keys"
 import { HevyClient } from "@/lib/hevy-client"
 
@@ -8,13 +8,13 @@ import { HevyClient } from "@/lib/hevy-client"
  * Throws error if user is not authenticated or API key is not configured
  */
 export async function getAuthenticatedHevyClient(): Promise<HevyClient> {
-  const session = await auth()
+  const { userId } = await auth()
 
-  if (!session?.user?.id) {
+  if (!userId) {
     throw new Error("Unauthorized: Please log in to access this resource")
   }
 
-  const apiKey = await getUserApiKey(session.user.id)
+  const apiKey = await getUserApiKey(userId)
 
   if (!apiKey) {
     throw new Error(

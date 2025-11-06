@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { auth } from "@clerk/nextjs/server"
 import { getUserApiKey, saveUserApiKey } from "@/lib/db/user-api-keys"
 import { NextResponse } from "next/server"
 
@@ -7,16 +7,16 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const session = await auth()
+    const { userId } = await auth()
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       )
     }
 
-    const apiKey = await getUserApiKey(session.user.id)
+    const apiKey = await getUserApiKey(userId)
 
     if (!apiKey) {
       return NextResponse.json(
@@ -43,9 +43,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    const session = await auth()
+    const { userId } = await auth()
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -70,7 +70,7 @@ export async function PUT(request: Request) {
       )
     }
 
-    await saveUserApiKey(session.user.id, apiKey)
+    await saveUserApiKey(userId, apiKey)
 
     return NextResponse.json({
       success: true,
