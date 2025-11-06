@@ -36,26 +36,73 @@ export class HevyClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
+    const timestamp = new Date().toISOString()
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "api-key": this.apiKey,
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    })
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "api-key": this.apiKey,
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+      })
 
-    if (!response.ok) {
-      const error: HevyApiError = await response.json().catch(() => ({
-        error: "Unknown Error",
-        message: response.statusText,
-        status_code: response.status,
-      }))
-      throw new Error(`Hevy API Error: ${error.message}`)
+      if (!response.ok) {
+        const error: HevyApiError = await response.json().catch(() => ({
+          error: "Unknown Error",
+          message: response.statusText,
+          status_code: response.status,
+        }))
+
+        // Enhanced error logging
+        console.error("❌ Hevy API Error:", {
+          timestamp,
+          url,
+          method: options.method || "GET",
+          status: response.status,
+          statusText: response.statusText,
+          error: error.message,
+          fullError: error,
+        })
+
+        // Provide more specific error messages
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(
+            "Invalid or expired Hevy API key. Please check your API key in settings."
+          )
+        }
+
+        throw new Error(`Hevy API Error: ${error.message}`)
+      }
+
+      // Log successful requests in development
+      if (process.env.NODE_ENV === "development") {
+        console.log("✅ Hevy API Success:", {
+          timestamp,
+          url,
+          method: options.method || "GET",
+          status: response.status,
+        })
+      }
+
+      return response.json()
+    } catch (error) {
+      // Log network errors or other unexpected errors
+      if (error instanceof Error && !error.message.includes("Hevy API")) {
+        console.error("❌ Hevy API Request Failed:", {
+          timestamp,
+          url,
+          method: options.method || "GET",
+          error: error.message,
+          stack: error.stack,
+        })
+        throw new Error(
+          `Failed to connect to Hevy API: ${error.message}. Please check your internet connection.`
+        )
+      }
+      throw error
     }
-
-    return response.json()
   }
 
   // Workouts
