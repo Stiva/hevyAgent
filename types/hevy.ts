@@ -181,7 +181,7 @@ export interface HevyWorkoutEventsResponse {
 
 // API Error Response
 export interface HevyApiError {
-  error: string
-  message: string
+  error?: string
+  message?: string
   status_code: number
 }

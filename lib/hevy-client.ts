@@ -51,9 +51,12 @@ export class HevyClient {
       if (!response.ok) {
         const error: HevyApiError = await response.json().catch(() => ({
           error: "Unknown Error",
-          message: response.statusText,
+          message: response.statusText || "Request failed",
           status_code: response.status,
         }))
+
+        // Create a meaningful error message
+        const errorMessage = error.message || error.error || response.statusText || "Unknown error occurred"
 
         // Enhanced error logging
         console.error("❌ Hevy API Error:", {
@@ -62,7 +65,7 @@ export class HevyClient {
           method: options.method || "GET",
           status: response.status,
           statusText: response.statusText,
-          error: error.message,
+          error: errorMessage,
           fullError: error,
         })
 
@@ -73,7 +76,7 @@ export class HevyClient {
           )
         }
 
-        throw new Error(`Hevy API Error: ${error.message}`)
+        throw new Error(`Hevy API Error: ${errorMessage}`)
       }
 
       // Log successful requests in development
