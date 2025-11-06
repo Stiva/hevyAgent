@@ -60,7 +60,11 @@ export const WorkoutsListModal = ({ isOpen, onClose, view }: WorkoutsListModalPr
     })
   }
 
-  const formatDuration = (minutes: number) => {
+  const calculateDuration = (startTime: string, endTime: string) => {
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+    const durationMs = end.getTime() - start.getTime()
+    const minutes = Math.floor(durationMs / 60000)
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
@@ -121,10 +125,10 @@ export const WorkoutsListModal = ({ isOpen, onClose, view }: WorkoutsListModalPr
                             <Calendar className="w-4 h-4" />
                             <span>{formatDate(workout.start_time)}</span>
                           </div>
-                          {workout.duration_minutes && (
+                          {workout.start_time && workout.end_time && (
                             <div className="flex items-center gap-1">
                               <Clock className="w-4 h-4" />
-                              <span>{formatDuration(workout.duration_minutes)}</span>
+                              <span>{calculateDuration(workout.start_time, workout.end_time)}</span>
                             </div>
                           )}
                           <div className="flex items-center gap-1">
