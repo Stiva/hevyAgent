@@ -1,30 +1,9 @@
-import { auth } from "@/lib/auth"
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import NextAuth from "next-auth"
+import authConfig from "@/auth.config"
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+export const { auth: middleware } = NextAuth(authConfig)
 
-  // Allow public access to landing page and auth routes
-  if (
-    pathname === "/" ||
-    pathname.startsWith("/api/auth") ||
-    pathname === "/login"
-  ) {
-    return NextResponse.next()
-  }
-
-  // Check authentication for all other routes
-  const session = await auth()
-
-  if (!session) {
-    const loginUrl = new URL("/login", request.url)
-    loginUrl.searchParams.set("callbackUrl", pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-
-  return NextResponse.next()
-}
+export default middleware
 
 export const config = {
   matcher: [
@@ -34,8 +13,10 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api/auth (auth routes)
+     * - login page
+     * - homepage (/)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/auth|login|^$).*)",
   ],
 }
-

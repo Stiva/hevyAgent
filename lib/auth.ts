@@ -1,44 +1,26 @@
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Email from "next-auth/providers/email"
+import authConfig from "@/auth.config"
 import NeonAdapter from "@auth/neon-adapter"
 import { Pool } from "@neondatabase/serverless"
 
-export const { handlers, auth, signIn, signOut } = NextAuth(() => {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-  return {
-    adapter: NeonAdapter(pool),
-    providers: [
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      }),
-      Email({
-        server: {
-          host: process.env.EMAIL_SERVER_HOST,
-          port: Number(process.env.EMAIL_SERVER_PORT),
-          auth: {
-            user: process.env.EMAIL_SERVER_USER,
-            pass: process.env.EMAIL_SERVER_PASSWORD,
-          },
-        },
-        from: process.env.EMAIL_FROM,
-      }),
-    ],
-    session: {
-      strategy: "database",
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: NeonAdapter(pool),
+  session: { strategy: "jwt" }, // Changed from "database" to "jwt" for Edge Runtime compatibility
+  ...authConfig,
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        session.user.id = token.sub
+      }
+      return session
     },
-    pages: {
-      signIn: "/login",
-      error: "/login",
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id
+      }
+      return token
     },
-    callbacks: {
-      async session({ session, user }) {
-        if (session.user) {
-          session.user.id = user.id
-        }
-        return session
-      },
-    },
-  }
+  },
 })
