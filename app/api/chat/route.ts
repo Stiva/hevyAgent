@@ -1,6 +1,6 @@
 import Anthropic, { APIError } from "@anthropic-ai/sdk"
 import { createHevyTools } from "@/lib/ai/tools"
-import { auth } from "@/lib/auth"
+import { auth } from "@clerk/nextjs/server"
 import { getAuthenticatedHevyClient } from "@/lib/hevy-helpers"
 
 // Force dynamic rendering for this route (uses auth which reads headers)
@@ -109,8 +109,8 @@ export async function POST(req: Request) {
     }
 
     // Get authenticated user and their Hevy API key
-    const session = await auth()
-    if (!session?.user?.id) {
+    const { userId } = await auth()
+    if (!userId) {
       return new Response(
         JSON.stringify({
           error: "Unauthorized",
