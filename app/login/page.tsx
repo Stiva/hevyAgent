@@ -74,7 +74,7 @@ export default function LoginPage() {
             <div className="p-4 bg-green-50 text-green-800 rounded-md">
               <p className="font-medium">Check your email!</p>
               <p className="text-sm mt-1">
-                We've sent a magic link to <strong>{email}</strong>. Click the link in the email to sign in.
+                We&apos;ve sent a magic link to <strong>{email}</strong>. Click the link in the email to sign in.
               </p>
             </div>
             <Button

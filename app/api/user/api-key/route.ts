@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth"
 import { getUserApiKey, saveUserApiKey } from "@/lib/db/user-api-keys"
 import { NextResponse } from "next/server"
 

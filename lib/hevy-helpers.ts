@@ -1,5 +1,5 @@
 // Helper functions for Hevy API operations with authentication
-import { auth } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth"
 import { getUserApiKey } from "@/lib/db/user-api-keys"
 import { HevyClient } from "@/lib/hevy-client"
 

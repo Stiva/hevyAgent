@@ -1,6 +1,6 @@
 import Anthropic, { APIError } from "@anthropic-ai/sdk"
 import { createHevyTools } from "@/lib/ai/tools"
-import { auth } from "@/app/api/auth/[...nextauth]/route"
+import { auth } from "@/lib/auth"
 import { getAuthenticatedHevyClient } from "@/lib/hevy-helpers"
 
 // Validate environment variables
