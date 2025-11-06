@@ -10,6 +10,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: NeonAdapter(pool),
   session: { strategy: "jwt" }, // Changed from "database" to "jwt" for Edge Runtime compatibility
   ...authConfig,
+  debug: process.env.NODE_ENV === "development",
+  trustHost: true,
   // Merge Email provider with Google from authConfig
   providers: [
     ...authConfig.providers,
@@ -25,7 +27,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       from: process.env.EMAIL_FROM,
     }),
   ],
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      console.log("User signed in:", {
+        email: user.email,
+        provider: account?.provider,
+        isNewUser,
+      })
+    },
+    async createUser({ user }) {
+      console.log("User created:", user.email)
+    },
+  },
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log("SignIn callback triggered:", {
+        user: user?.email,
+        account: account?.provider,
+        hasProfile: !!profile,
+      })
+      try {
+        // Allow sign in
+        return true
+      } catch (error) {
+        console.error("SignIn callback error:", error)
+        return false
+      }
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub
