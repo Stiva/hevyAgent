@@ -47,8 +47,8 @@ export const WorkoutStats = () => {
 
         const countData = await countRes.json()
 
-        // Fetch recent workouts
-        const workoutsRes = await fetch("/api/hevy/workouts?pageSize=30")
+        // Fetch recent workouts (Hevy API max pageSize is 10)
+        const workoutsRes = await fetch("/api/hevy/workouts?pageSize=10")
 
         if (!workoutsRes.ok) {
           const errorData = await workoutsRes.json().catch(() => ({
@@ -65,10 +65,19 @@ export const WorkoutStats = () => {
 
         const workoutsData = await workoutsRes.json()
 
+        // Calculate workouts in last 30 days from the fetched workouts
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+        const recentWorkouts = workoutsData.workouts?.filter((workout: any) => {
+          const workoutDate = new Date(workout.start_time)
+          return workoutDate >= thirtyDaysAgo
+        }) || []
+
         setStats({
           totalWorkouts: countData.workout_count,
-          last30Days: workoutsData.workouts?.length || 0,
-          averagePerWeek: ((workoutsData.workouts?.length || 0) / 30) * 7,
+          last30Days: recentWorkouts.length,
+          averagePerWeek: (recentWorkouts.length / 30) * 7,
         })
       } catch (error) {
         console.error("❌ Failed to fetch workout stats:", error)

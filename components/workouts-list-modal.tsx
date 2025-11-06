@@ -25,20 +25,35 @@ export const WorkoutsListModal = ({ isOpen, onClose, view }: WorkoutsListModalPr
         setLoading(true)
         setError(null)
 
-        // Fetch workouts based on view
-        const pageSize = view === "last30" ? 30 : 100
-        const response = await fetch(`/api/hevy/workouts?pageSize=${pageSize}`)
+        // Hevy API max pageSize is 10, so we need to fetch multiple pages
+        const maxPages = view === "last30" ? 3 : 10 // 3 pages = 30 workouts, 10 pages = 100 workouts
+        const allWorkouts: HevyWorkout[] = []
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({
-            message: "Failed to fetch workouts",
-          }))
-          setError(errorData.message)
-          return
+        for (let page = 1; page <= maxPages; page++) {
+          const response = await fetch(`/api/hevy/workouts?page=${page}&pageSize=10`)
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({
+              message: "Failed to fetch workouts",
+            }))
+            setError(errorData.message)
+            return
+          }
+
+          const data = await response.json()
+          if (data.workouts && data.workouts.length > 0) {
+            allWorkouts.push(...data.workouts)
+
+            // If we got fewer than 10 workouts, we've reached the end
+            if (data.workouts.length < 10) {
+              break
+            }
+          } else {
+            break
+          }
         }
 
-        const data = await response.json()
-        setWorkouts(data.workouts || [])
+        setWorkouts(allWorkouts)
       } catch (err) {
         console.error("Failed to fetch workouts:", err)
         setError(err instanceof Error ? err.message : "Unknown error")
